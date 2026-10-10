@@ -2,5 +2,6 @@ decryptor/
 test.backup
 test.json
 test.json.tmp
-fixup-v3-fixed__pycache__/
+fixup-v3-fixed
+__pycache__/
 *.backup.json
