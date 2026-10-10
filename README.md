@@ -1,6 +1,34 @@
 This is a wrapper script which wraps the very useful script over at https://github.com/olejorgenb/ColorNote-backup-decryptor.
 This script can decrypt and extract a ColorNote backup.
 
+## Quick start: one command, no Java (recommended)
+
+`colornote_decrypt.py` decrypts the backup and writes clean JSON in a single step. It only needs Python 3:
+no Java, no fixup scripts, no manual clean-up.
+
+```
+$ python3 colornote_decrypt.py colornote-20260128.backup
+ColorNote master password (0000 if never set):
+Decrypted 7 notes (2 checklists, 0 archived, 0 in trash, 1 locked), 3 folders -> colornote-20260128.backup.json
+```
+
+Options: `-p PASSWORD` to skip the prompt, `-o notes.json` to choose the output file, and `--all` to keep
+every record (settings, folder definitions, deleted rows). `pip install cryptography` makes it faster, but
+it isn't required. The tool also accepts JSON produced by the older scripts.
+
+**Moving to iPhone?** The SecureHueNotes (HueNotes) iOS app does the same decryption on the phone. Send the
+backup file to your iPhone, open it with HueNotes and enter the master password; every note, checklist,
+folder, color and reminder is imported in one go.
+
+How the format works (worked out from the Java decryptor): the first 28 bytes are a plaintext header; the
+rest is AES-128-CBC (PKCS#7, all-zero IV) with key `MD5(password + "ColorNote Fixed Salt")`. The plaintext
+is a series of `[u32 section][u32 count]` blocks, each followed by `count` records of `[u32 length][JSON]`.
+
+Locked notes are encrypted a second time with a key that isn't stored in the backup, so unlock them in
+ColorNote before making the backup (see Prerequisites below).
+
+The original Java-based wrapper is documented below.
+
 # Installation/User Guide
 If you want to use the ColorNote Backup Decryptor to decrypt a ColorNote backup, please follow these steps.
 
